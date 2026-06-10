@@ -44,10 +44,12 @@ pipeline {
             steps {
                 // reduced nesting: run scanner from frontend directory in one shell command
                 sh '''
-                    cd Application-Code/frontend
-                    $SCANNER_HOME/bin/sonar-scanner \
+                        cd Application-Code/frontend
+                        $SCANNER_HOME/bin/sonar-scanner \
+                        -Dsonar.host.url=$SONAR_HOST_URL \
                         -Dsonar.projectName=three-tier-frontend \
-                        -Dsonar.projectKey=three-tier-frontend '''
+                        -Dsonar.projectKey=three-tier-frontend 
+                        '''
             }
         }
     }
