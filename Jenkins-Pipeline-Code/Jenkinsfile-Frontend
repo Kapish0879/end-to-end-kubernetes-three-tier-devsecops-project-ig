@@ -29,7 +29,7 @@ pipeline {
                 sh '''
                   echo "SCANNER_HOME=$SCANNER_HOME"
                   ls -la $SCANNER_HOME
-                  '''
+                '''
             }
         }
         stage('Sonarqube Analysis') {
@@ -120,5 +120,5 @@ pipeline {
     //         }
     //     }
     // }
-    }
-}
+    
+
