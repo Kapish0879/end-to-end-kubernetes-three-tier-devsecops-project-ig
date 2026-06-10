@@ -7,7 +7,7 @@ pipeline {
     //     nodejs 'nodejs'
     // }
     environment  {
-        SCANNER_HOME=tool 'sonar-scanner'
+        SCANNER_HOME = tool 'sonar-scanner'
     //     AWS_ACCOUNT_ID = credentials('ACCOUNT_ID')
     //     AWS_ECR_REPO_NAME = credentials('ECR_REPO1')
     //     AWS_DEFAULT_REGION = 'us-east-1'
@@ -24,12 +24,20 @@ pipeline {
                 git url: 'https://github.com/Kapish0879/end-to-end-kubernetes-three-tier-devsecops-project-ig.git'
             }
         }
-        stage('Debug Sonar') {
+        stage('Test SonarQube') {
             steps {
                 sh '''
-                  echo "SCANNER_HOME=$SCANNER_HOME"
-                  ls -la $SCANNER_HOME
+                 curl -I http://<sonarqube-private-ip>:9000
                 '''
+            }
+        }
+        stage('Debug Sonar') {
+            steps {
+                withSonarQubeEnv('sonar-server') {
+                    sh '''
+                 echo "SONAR_HOST_URL=$SONAR_HOST_URL"
+                 '''
+                }
             }
         }
         stage('Sonarqube Analysis') {
@@ -40,10 +48,10 @@ pipeline {
                     $SCANNER_HOME/bin/sonar-scanner \
                         -Dsonar.projectName=three-tier-frontend \
                         -Dsonar.projectKey=three-tier-frontend '''
-                    }
-                }
             }
         }
+    }
+}
     // stage('Quality Check') {
     //     steps {
     //         script {
@@ -120,5 +128,3 @@ pipeline {
     //         }
     //     }
     // }
-    
-
