@@ -27,7 +27,7 @@ pipeline {
         stage('Test SonarQube') {
             steps {
                 sh '''
-                 curl -I http://<sonarqube-private-ip>:9000
+                 curl -I http://172.31.25.170:9000
                 '''
             }
         }
