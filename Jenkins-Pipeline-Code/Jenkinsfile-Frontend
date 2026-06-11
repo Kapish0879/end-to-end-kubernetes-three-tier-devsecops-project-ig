@@ -66,6 +66,14 @@ pipeline {
                 }
             }
         }
+        stage('Debug Dependency Check') {
+            steps {
+                script {
+                    def dcHome = tool 'DP-Check'
+                    echo "Dependency Check Home: ${dcHome}"
+                }
+            }
+        }
         stage('OWASP Dependency-Check Scan') {
             steps {
                 dir('Application-Code/frontend') {
@@ -74,25 +82,25 @@ pipeline {
                 }
             }
         }
-        // stage('Trivy File Scan') {
-        //     steps {
-        //         dir('Application-Code/frontend') {
-        //             sh 'trivy fs . > trivyfs.txt'
-        //         }
-        //     }
-        // }
-        // stage('Docker Image Build') {
-        //     steps {
-        //         script {
-        //             dir('Application-Code/frontend') {
-        //                 sh 'docker --version'
-        //             // sh 'docker system prune -f'
-        //             // sh 'docker container prune -f'
-        //             // sh 'docker build -t ${AWS_ECR_REPO_NAME} .'
-        //             }
-        //         }
-        //     }
-        // }
+    // stage('Trivy File Scan') {
+    //     steps {
+    //         dir('Application-Code/frontend') {
+    //             sh 'trivy fs . > trivyfs.txt'
+    //         }
+    //     }
+    // }
+    // stage('Docker Image Build') {
+    //     steps {
+    //         script {
+    //             dir('Application-Code/frontend') {
+    //                 sh 'docker --version'
+    //             // sh 'docker system prune -f'
+    //             // sh 'docker container prune -f'
+    //             // sh 'docker build -t ${AWS_ECR_REPO_NAME} .'
+    //             }
+    //         }
+    //     }
+    // }
     // stage("ECR Image Pushing") {
     //     steps {
     //         script {
