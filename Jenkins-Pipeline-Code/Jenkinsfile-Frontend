@@ -81,6 +81,7 @@ pipeline {
                 odcInstallation: 'DP-Check',
                 additionalArguments: '''
                 --scan .
+                --out .
                 --format XML
                 --format HTML
                 --disableYarnAudit
@@ -88,9 +89,16 @@ pipeline {
                 '''
             )
 
-                    dependencyCheckPublisher(
-                pattern: '**/dependency-check-report.xml'
-            )
+                    sh '''
+            echo "Current directory:"
+            pwd
+
+            echo "Generated reports:"
+            find . -name "*dependency*"
+            find . -name "*.xml"
+            '''
+
+                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
                 }
             }
         }
@@ -166,3 +174,4 @@ pipeline {
     // }
     }
 }
+
