@@ -76,29 +76,25 @@ pipeline {
         }
         stage('OWASP Dependency-Check Scan') {
             steps {
-                dir('Application-Code/frontend') {
-                    dependencyCheck(
-                odcInstallation: 'DP-Check',
-                additionalArguments: '''
-                --scan .
-                --out .
-                --format XML
-                --format HTML
-                --disableYarnAudit
-                --disableNodeAudit
-                '''
-            )
+                withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
+                    dir('Application-Code/frontend') {
+                        dependencyCheck(
+                    odcInstallation: 'DP-Check',
+                    additionalArguments: """
+                    --scan .
+                    --out .
+                    --format XML
+                    --format HTML
+                    --nvdApiKey ${NVD_API_KEY}
+                    --disableYarnAudit
+                    --disableNodeAudit
+                    """
+                )
 
-                    sh '''
-            echo "Current directory:"
-            pwd
-
-            echo "Generated reports:"
-            find . -name "*dependency*"
-            find . -name "*.xml"
-            '''
-
-                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                        dependencyCheckPublisher(
+                    pattern: '**/dependency-check-report.xml'
+                )
+                    }
                 }
             }
         }
@@ -174,4 +170,3 @@ pipeline {
     // }
     }
 }
-
