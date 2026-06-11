@@ -44,47 +44,49 @@ pipeline {
             steps {
                 dir('Application-Code/frontend') {
                     withSonarQubeEnv('sonar-server') {
-                        sh ''' $SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar.projectName=three-tier-frontend \
-                        -Dsonar.projectKey=three-tier-frontend '''
+                        sh """
+                $SCANNER_HOME/bin/sonar-scanner \
+                -Dsonar.projectName=three-tier-frontend \
+                -Dsonar.projectKey=three-tier-frontend
+                """
                     }
                 }
             }
         }
         stage('Quality Check') {
             steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+        // stage('OWASP Dependency-Check Scan') {
+        //     steps {
+        //         dir('Application-Code/frontend') {
+        //             dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
+        //             dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+        //         }
+        //     }
+        // }
+        // stage('Trivy File Scan') {
+        //     steps {
+        //         dir('Application-Code/frontend') {
+        //             sh 'trivy fs . > trivyfs.txt'
+        //         }
+        //     }
+        // }
+        stage('Docker Image Build') {
+            steps {
                 script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
+                    dir('Application-Code/frontend') {
+                        sh 'docker --version'
+                    // sh 'docker system prune -f'
+                    // sh 'docker container prune -f'
+                    // sh 'docker build -t ${AWS_ECR_REPO_NAME} .'
+                    }
                 }
             }
         }
-    // stage('OWASP Dependency-Check Scan') {
-    //     steps {
-    //         dir('Application-Code/frontend') {
-    //             dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
-    //             dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-    //         }
-    //     }
-    // }
-    // stage('Trivy File Scan') {
-    //     steps {
-    //         dir('Application-Code/frontend') {
-    //             sh 'trivy fs . > trivyfs.txt'
-    //         }
-    //     }
-    // }
-    stage("Docker Image Build") {
-        steps {
-            script {
-                dir('Application-Code/frontend') {
-                     sh 'docker --version'
-                        // sh 'docker system prune -f'
-                        // sh 'docker container prune -f'
-                        // sh 'docker build -t ${AWS_ECR_REPO_NAME} .'
-                }
-            }
-        }
-    }
     // stage("ECR Image Pushing") {
     //     steps {
     //         script {
