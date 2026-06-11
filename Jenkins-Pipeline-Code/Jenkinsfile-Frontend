@@ -66,38 +66,38 @@ pipeline {
                 }
             }
         }
-        stage('Debug Dependency Check') {
-            steps {
-                script {
-                    def dcHome = tool 'DP-Check'
-                    echo "Dependency Check Home: ${dcHome}"
-                }
-            }
-        }
-        stage('OWASP Dependency-Check Scan') {
-            steps {
-                withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
-                    dir('Application-Code/frontend') {
-                        dependencyCheck(
-                    odcInstallation: 'DP-Check',
-                    additionalArguments: """
-                    --scan .
-                    --out .
-                    --format XML
-                    --format HTML
-                    --nvdApiKey ${NVD_API_KEY}
-                    --disableYarnAudit
-                    --disableNodeAudit
-                    """
-                )
+        // stage('Debug Dependency Check') {
+        //     steps {
+        //         script {
+        //             def dcHome = tool 'DP-Check'
+        //             echo "Dependency Check Home: ${dcHome}"
+        //         }
+        //     }
+        // }
+        // stage('OWASP Dependency-Check Scan') {
+        //     steps {
+        //         withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
+        //             dir('Application-Code/frontend') {
+        //                 dependencyCheck(
+        //             odcInstallation: 'DP-Check',
+        //             additionalArguments: """
+        //             --scan .
+        //             --out .
+        //             --format XML
+        //             --format HTML
+        //             --nvdApiKey ${NVD_API_KEY}
+        //             --disableYarnAudit
+        //             --disableNodeAudit
+        //             """
+        //         )
 
-                        dependencyCheckPublisher(
-                    pattern: '**/dependency-check-report.xml'
-                )
-                    }
-                }
-            }
-        }
+        //                 dependencyCheckPublisher(
+        //             pattern: '**/dependency-check-report.xml'
+        //         )
+        //             }
+        //         }
+        //     }
+        // }
     // stage('OWASP Dependency-Check Scan') {
     //     steps {
     //         dir('Application-Code/frontend') {
@@ -106,13 +106,13 @@ pipeline {
     //         }
     //     }
     // }
-    // stage('Trivy File Scan') {
-    //     steps {
-    //         dir('Application-Code/frontend') {
-    //             sh 'trivy fs . > trivyfs.txt'
-    //         }
-    //     }
-    // }
+    stage('Trivy File Scan') {
+        steps {
+            dir('Application-Code/frontend') {
+                sh 'trivy fs . > trivyfs.txt'
+            }
+        }
+    }
     // stage('Docker Image Build') {
     //     steps {
     //         script {
