@@ -127,7 +127,10 @@ pipeline {
         }
         stage('aws configure') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'aws-key')])
+                withCredentials([
+            [$class: 'AmazonWebServicesCredentialsBinding',
+             credentialsId: 'aws-key']
+                ])
             }
         }
         stage('ECR Image Pushing') {
