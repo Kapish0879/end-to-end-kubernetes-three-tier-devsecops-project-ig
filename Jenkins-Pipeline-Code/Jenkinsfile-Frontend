@@ -6,7 +6,7 @@ pipeline {
     //     jdk 'jdk'
     //     nodejs 'nodejs'
     // }
-    environment  {
+    environment {
         SCANNER_HOME = tool 'sonar-scanner'
         AWS_ACCOUNT_ID = credentials('aws-acc-id')
         AWS_ECR_REPO_NAME = 'three-tire/frontend'
@@ -125,63 +125,49 @@ pipeline {
                 }
             }
         }
-        // stage('aws configure') {
-        //     steps {
-        //         withCredentials([
-        //     [$class: 'AmazonWebServicesCredentialsBinding',
-        //      credentialsId: 'aws-key']
-        // ]) {
-        //             sh '''
-        //     aws sts get-caller-identity
-        //     '''
-        // }
-        //     }
-        // }
+
         stage('ECR Image Pushing') {
             steps {
                 withCredentials([
             [$class: 'AmazonWebServicesCredentialsBinding',
              credentialsId: 'aws-key']
-        ])      {
+         ])      {
                     script {
                         sh 'aws sts get-caller-identity'
                         sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${REPOSITORY_URI}'
                         sh 'docker tag ${AWS_ECR_REPO_NAME} ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${BUILD_NUMBER}'
                         sh 'docker push ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${BUILD_NUMBER}'
                     }
-                }
-           }
+         }
+            }
         }
-    // stage("TRIVY Image Scan") {
-    //     steps {
-    //         sh 'trivy image ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${BUILD_NUMBER} > trivyimage.txt'
-    //     }
-    // }
+        stage('TRIVY Image Scan') {
+            steps {
+                sh 'trivy image ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${BUILD_NUMBER} > trivyimage.txt'
+            }
+        }
     // stage('Checkout Code') {
     //     steps {
-    //         git credentialsId: 'GITHUB', url: 'https://github.com/AmanPathak-DevOps/End-to-End-Kubernetes-Three-Tier-DevSecOps-Project.git'
+    //         git url: 'https://github.com/Kapish0879/end-to-end-kubernetes-three-tier-devsecops-project-ig.git'
     //     }
     // }
     // stage('Update Deployment file') {
     //     environment {
-    //         GIT_REPO_NAME = "End-to-End-Kubernetes-Three-Tier-DevSecOps-Project"
-    //         GIT_USER_NAME = "AmanPathak-DevOps"
+    //         GIT_REPO_NAME = 'end-to-end-kubernetes-three-tier-devsecops-project-ig'
+    //         GIT_USER_NAME = 'Kapish0879'
     //     }
     //     steps {
     //         dir('Kubernetes-Manifests-file/Frontend') {
-    //             withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+    //             withCredentials([string(credentialsId: 'GITHUB', variable: 'GITHUB_TOKEN')]) {
     //                 sh '''
-    //                     git config user.email "aman07pathak@gmail.com"
-    //                     git config user.name "AmanPathak-DevOps"
-    //                     BUILD_NUMBER=${BUILD_NUMBER}
-    //                     echo $BUILD_NUMBER
-    //                     imageTag=$(grep -oP '(?<=frontend:)[^ ]+' deployment.yaml)
-    //                     echo $imageTag
-    //                     sed -i "s/${AWS_ECR_REPO_NAME}:${imageTag}/${AWS_ECR_REPO_NAME}:${BUILD_NUMBER}/" deployment.yaml
-    //                     git add deployment.yaml
-    //                     git commit -m "Update deployment Image to version \${BUILD_NUMBER}"
-    //                     git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
-    //                 '''
+    //                 git config user.email "kapishvibhute@gmail.com"
+    //                 git config user.name "Kapish0879"
+    //                 BUILD_NUMBER=${BUILD_NUMBER}
+    //                 sed -i "s/Image-URL/${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${BUILD_NUMBER}/" deployment.yaml
+    //                 git add deployment.yaml
+    //                 git commit -m "Update deployment Image to version \${BUILD_NUMBER}"
+    //                 git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
+    //             '''
     //             }
     //         }
     //     }
