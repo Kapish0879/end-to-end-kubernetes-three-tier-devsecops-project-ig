@@ -125,18 +125,18 @@ pipeline {
                 }
             }
         }
-        stage('aws configure') {
-            steps {
-                withCredentials([
-            [$class: 'AmazonWebServicesCredentialsBinding',
-             credentialsId: 'aws-key']
-        ]) {
-                    sh '''
-            aws sts get-caller-identity
-            '''
-        }
-            }
-        }
+        // stage('aws configure') {
+        //     steps {
+        //         withCredentials([
+        //     [$class: 'AmazonWebServicesCredentialsBinding',
+        //      credentialsId: 'aws-key']
+        // ]) {
+        //             sh '''
+        //     aws sts get-caller-identity
+        //     '''
+        // }
+        //     }
+        // }
         stage('ECR Image Pushing') {
             steps {
                 withCredentials([
@@ -144,6 +144,7 @@ pipeline {
              credentialsId: 'aws-key']
         ])
                     script {
+                        sh 'aws sts get-caller-identity'
                         sh 'aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${REPOSITORY_URI}'
                         sh 'docker tag ${AWS_ECR_REPO_NAME} ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${BUILD_NUMBER}'
                         sh 'docker push ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${BUILD_NUMBER}'
