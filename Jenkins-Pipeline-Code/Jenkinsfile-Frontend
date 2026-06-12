@@ -129,8 +129,12 @@ pipeline {
             steps {
                 withCredentials([
             [$class: 'AmazonWebServicesCredentialsBinding',
-             credentialsId: 'aws-key']
-                ])
+             credentialsId: 'aws-creds']
+        ]) {
+                    sh '''
+            aws sts get-caller-identity
+            '''
+        }
             }
         }
         stage('ECR Image Pushing') {
