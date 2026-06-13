@@ -2,10 +2,10 @@ pipeline {
     agent {
         label 'kapish'
     } 
-    tools {
-        jdk 'jdk'
-        nodejs 'nodejs'
-    }
+    // tools {
+    //     jdk 'jdk'
+    //     nodejs 'nodejs'
+    // }
      environment {
         SCANNER_HOME = tool 'sonar-scanner'
         AWS_ACCOUNT_ID = credentials('aws-acc-id')
