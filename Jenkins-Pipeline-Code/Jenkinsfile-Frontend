@@ -170,7 +170,7 @@ pipeline {
         // }
         stage('Test GitHub Token') {
             steps {
-                withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+                withCredentials([string(credentialsId: 'GITHUB', variable: 'GITHUB_TOKEN')]) {
                     sh '''
             curl -s -H "Authorization: token $GITHUB_TOKEN" \
             https://api.github.com/user
