@@ -14,6 +14,21 @@ pipeline {
         REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/"
     }
     stages {
+        stage('Skip Jenkins Commit') {
+            steps {
+                script {
+                    def commitMsg = sh(
+                script: 'git log -1 --pretty=%B',
+                returnStdout: true
+            ).trim()
+
+                    if (commitMsg.contains('[skip-ci]')) {
+                        currentBuild.result = 'NOT_BUILT'
+                        error('Skipping Jenkins-generated commit')
+                    }
+                }
+            }
+        }
         stage('Cleaning Workspace') {
             steps {
                 cleanWs()
@@ -193,7 +208,7 @@ pipeline {
                             echo $imageTag
                             sed -i "s|frontend:${imageTag}|frontend:${BUILD_NUMBER}|g" deployment.yaml
                             git add deployment.yaml
-                            git commit -m "Update deployment Image to version \${BUILD_NUMBER}"
+                            git commit -m "[skip-ci] Update deployment image to ${BUILD_NUMBER}"
                             git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
                          '''
                     }
