@@ -215,11 +215,12 @@ pipeline {
                 }
             }
         }
-        post {
+    }
+    post {
             always {
                 echo 'Cleaning Workspace and Docker Resources...'
 
-             sh '''
+            sh '''
              # Remove all containers
              docker rm -f $(docker ps -aq) 2>/dev/null || true
 
@@ -234,5 +235,4 @@ pipeline {
                 cleanWs()
             }
         }
-    }
 }
