@@ -215,5 +215,24 @@ pipeline {
                 }
             }
         }
+        post {
+            always {
+                echo 'Cleaning Workspace and Docker Resources...'
+
+             sh '''
+             # Remove all containers
+             docker rm -f $(docker ps -aq) 2>/dev/null || true
+
+             # Remove all images
+             docker rmi -f $(docker images -aq) 2>/dev/null || true
+
+             # Remove unused volumes, networks, cache
+             docker system prune -af --volumes || true
+             '''
+
+                // Remove all files from Jenkins workspace
+                cleanWs()
+            }
+        }
     }
 }
