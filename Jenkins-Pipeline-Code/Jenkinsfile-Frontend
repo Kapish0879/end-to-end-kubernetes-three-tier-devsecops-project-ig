@@ -168,6 +168,16 @@ pipeline {
         //         git url: 'https://github.com/Kapish0879/end-to-end-kubernetes-three-tier-devsecops-project-ig.git'
         //     }
         // }
+        stage('Test GitHub Token') {
+            steps {
+                withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+                    sh '''
+            curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            https://api.github.com/user
+            '''
+                }
+            }
+        }
         stage('Update Deployment file') {
             environment {
                 GIT_REPO_NAME = 'end-to-end-kubernetes-three-tier-devsecops-project-ig'
