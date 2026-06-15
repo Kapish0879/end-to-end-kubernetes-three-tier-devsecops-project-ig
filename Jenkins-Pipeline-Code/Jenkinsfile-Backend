@@ -15,6 +15,21 @@ pipeline {
         PUSH_IMAGE_TAG = "${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${BUILD_NUMBER}"
     }
     stages {
+        stage('Skip Jenkins Commit') {
+            steps {
+                script {
+                    def commitMsg = sh(
+                script: 'git log -1 --pretty=%B',
+                returnStdout: true
+            ).trim()
+
+                    if (commitMsg.contains('[skip-ci]')) {
+                        currentBuild.result = 'NOT_BUILT'
+                        error('Skipping Jenkins-generated commit')
+                    }
+                }
+            }
+        }
         stage('Cleaning Workspace') {
             steps {
                 cleanWs()
@@ -103,34 +118,51 @@ pipeline {
                }
             }
         }
-    // stage('Checkout Code') {
-    //     steps {
-    //         git credentialsId: 'GITHUB', url: 'https://github.com/AmanPathak-DevOps/End-to-End-Kubernetes-Three-Tier-DevSecOps-Project.git'
-    //     }
-    // }
-    // stage('Update Deployment file') {
-    //     environment {
-    //         GIT_REPO_NAME = "End-to-End-Kubernetes-Three-Tier-DevSecOps-Project"
-    //         GIT_USER_NAME = "AmanPathak-DevOps"
-    //     }
-    //     steps {
-    //         dir('Kubernetes-Manifests-file/Backend') {
-    //             withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
-    //                 sh '''
-    //                     git config user.email "aman07pathak@gmail.com"
-    //                     git config user.name "AmanPathak-DevOps"
-    //                     BUILD_NUMBER=${BUILD_NUMBER}
-    //                     echo $BUILD_NUMBER
-    //                     imageTag=$(grep -oP '(?<=backend:)[^ ]+' deployment.yaml)
-    //                     echo $imageTag
-    //                     sed -i "s/${AWS_ECR_REPO_NAME}:${imageTag}/${AWS_ECR_REPO_NAME}:${BUILD_NUMBER}/" deployment.yaml
-    //                     git add deployment.yaml
-    //                     git commit -m "Update deployment Image to version \${BUILD_NUMBER}"
-    //                     git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
-    //                 '''
-    //             }
-    //         }
-    //     }
-    // }
+        // stage('Checkout Code') {
+        //     steps {
+        //         git credentialsId: 'GITHUB', url: 'https://github.com/AmanPathak-DevOps/End-to-End-Kubernetes-Three-Tier-DevSecOps-Project.git'
+        //     }
+        // }
+        stage('Update Deployment file') {
+            environment {
+                GIT_REPO_NAME = 'end-to-end-kubernetes-three-tier-devsecops-project-ig'
+                GIT_USER_NAME = 'Kapish0879'
+            }
+            steps {
+                dir('Kubernetes-Manifests-file/Backend') {
+                    withCredentials([string(credentialsId: 'GITHUB', variable: 'GITHUB_TOKEN')]) {
+                        sh '''
+                            git config user.email "kapishvibhute@gmail.com"
+                            git config user.name "Kapish0879"
+                            imageTag=$(grep -oP '(?<=backend:)[^ ]+' deployment.yaml)
+                            echo $imageTag
+                            sed -i "s|backend:${imageTag}|backend:${BUILD_NUMBER}|g" deployment.yaml
+                            git add deployment.yaml
+                            git commit -m "[skip-ci] Update deployment image to ${BUILD_NUMBER}"
+                            git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
+                         '''
+                    }
+                }
+            }
+        }
     }
+    post {
+            always {
+                echo 'Cleaning Workspace and Docker Resources...'
+
+            sh '''
+             # Remove all containers
+             docker rm -f $(docker ps -aq) 2>/dev/null || true
+
+             # Remove all images
+             docker rmi -f $(docker images -aq) 2>/dev/null || true
+
+             # Remove unused volumes, networks, cache
+             docker system prune -af --volumes || true
+             '''
+
+                // Remove all files from Jenkins workspace
+                cleanWs()
+            }
+        }
 }
