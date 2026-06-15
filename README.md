@@ -8,7 +8,7 @@
 
 ![Three-Tier Banner](assets/Three-Tier.gif)
 
-Welcome to the Three-Tier Web Application Deployment project! 🚀
+Welcome to the Three-Tier Web Application Deployment project! 🚀 
 
 This repository hosts the implementation of a Three-Tier Web App using ReactJS, NodeJS, and MongoDB, deployed on AWS EKS. The project covers a wide range of tools and practices for a robust and scalable DevOps setup.
 
@@ -57,4 +57,4 @@ We welcome contributions! If you have ideas for enhancements or find any issues,
 ## License
 This project is licensed under the [MIT License](LICENSE).
 
-Happy Coding! 🚀
+Happy Coding! 🚀 kapish
