@@ -23,13 +23,24 @@ pipeline {
                 returnStdout: true
             ).trim()
 
+                    echo "Commit Message: ${commitMsg}"
+
                     if (commitMsg.contains('[skip-ci]')) {
                         currentBuild.result = 'NOT_BUILT'
-                        error('Skipping Jenkins-generated commit')
+                        env.SKIP_PIPELINE = 'true'
+                        echo 'Skipping Jenkins-generated commit'
                     }
                 }
             }
         }
+            stage('Check Skip Flag') {
+                when {
+                    expression { return env.SKIP_PIPELINE != 'true' }
+                }
+                steps {
+                    echo 'Proceeding with pipeline execution...'
+                }
+            }
         stage('Cleaning Workspace') {
             steps {
                 cleanWs()
@@ -164,5 +175,6 @@ pipeline {
                 // Remove all files from Jenkins workspace
                 cleanWs()
             }
-        }
+    }
 }
+
