@@ -6,49 +6,45 @@ metadata:
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
-    alb.ingress.kubernetes.io/subnets: "subnet-089fd66d226d7ab89,subnet-0403bccf28f9062e0"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    alb.ingress.kubernetes.io/subnets: "subnet-0403bccf28f9062e0,subnet-089fd66d226d7ab89"
 spec:
   ingressClassName: alb
   rules:
   - http:
-      paths:
-      - path: /api
-        pathType: Prefix
-        backend:
-          service:
-            name: api
-            port:
-              number: 3500
-
-      - path: /healthz
-        pathType: Exact
-        backend:
-          service:
-            name: api
-            port:
-              number: 3500
-
-      - path: /ready
-        pathType: Exact
-        backend:
-          service:
-            name: api
-            port:
-              number: 3500
-
-      - path: /started
-        pathType: Exact
-        backend:
-          service:
-            name: api
-            port:
-              number: 3500
-
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: frontend
-            port:
-              number: 3000
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: api
+                port:
+                  number: 3500
+          - path: /healthz
+            pathType: Exact
+            backend:
+              service:
+                name: api
+                port:
+                  number: 3500
+          - path: /ready
+            pathType: Exact
+            backend:
+              service:
+                name: api
+                port:
+                  number: 3500
+          - path: /started
+            pathType: Exact
+            backend:
+              service:
+                name: api
+                port:
+                  number: 3500
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
