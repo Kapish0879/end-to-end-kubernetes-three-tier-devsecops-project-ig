@@ -12,6 +12,7 @@ class App extends Tasks {
             <div className="app">
                 <header className="app-header">
                     <h1>My To-Do List</h1>
+                    <h4>Manage your tasks efficiently with our simple and intuitive To-Do List application.</h4>
                 </header>
                 <div className="main-content">
                     <Paper elevation={3} className="todo-container">
