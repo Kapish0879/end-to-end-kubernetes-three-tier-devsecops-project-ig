@@ -12,7 +12,7 @@ class App extends Tasks {
             <div className="app">
                 <header className="app-header">
                     <h1>My To-Do List</h1>
-                    <h4>Developed by <b>KAPISH VIBHUTE</b></h4>
+                    <h4>Developed by <b>NIRMALA VIBHUTE</b></h4>
                 </header>
                 <div className="main-content">
                     <Paper elevation={3} className="todo-container">
